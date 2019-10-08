@@ -1,0 +1,53 @@
+#Change computer name
+#$computerName = Get-WmiObject Win32_ComputerSystem
+#$name = Read-Host -Prompt "Patrick.Smith"
+#$computerName.Rename($name)
+
+#Running script as admin
+
+If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
+
+{   
+$arguments = "& '" + $myinvocation.mycommand.definition + "'"
+Start-Process powershell -Verb runAs -ArgumentList $arguments
+Break
+}
+
+#Copy Files to D: drive From USB
+
+Copy-Item -Path E:\RNHouseSans-Bold.ttf -Destination "D:\SCALA\PLAYER_CFG_DATA\Application Data\Fonts\"
+Copy-Item -Path E:\RNHouseSans-BoldItalic.ttf -Destination "D:\SCALA\PLAYER_CFG_DATA\Application Data\Fonts\"
+Copy-Item -Path E:\RNHouseSans-Italic.ttf -Destination "D:\SCALA\PLAYER_CFG_DATA\Application Data\Fonts\"
+Copy-Item -Path E:\RNHouseSans-Light.ttf -Destination "D:\SCALA\PLAYER_CFG_DATA\Application Data\Fonts\"
+Copy-Item -Path E:\RNHouseSans-LightItalic.ttf -Destination "D:\SCALA\PLAYER_CFG_DATA\Application Data\Fonts\"
+Copy-Item -Path E:\RNHouseSans-Regular.ttf -Destination "D:\SCALA\PLAYER_CFG_DATA\Application Data\Fonts\"
+Copy-Item -Path E:\RNHouseSans-Thin.ttf -Destination "D:\SCALA\PLAYER_CFG_DATA\Application Data\Fonts\"
+Copy-Item -Path E:\RNHouseSans-ThinItalic.ttf -Destination "D:\SCALA\PLAYER_CFG_DATA\Application Data\Fonts\"
+
+# Set Short date format
+
+New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS 
+
+Set-ItemProperty -Path "HKCU:\Control Panel\International" -Name sShortDate -Value dd-MMM-yy -Force
+
+#Set timezone
+
+Set-TimeZone -Name "GMT Standard Time"
+
+net stop w32time
+net start w32time
+
+#Install Teamviewer - TeamViewer_Setup.exe should be in this script directory)
+
+$setup=Start-Process E:\TeamViewer_Setup.exe
+
+#Opening Scala Player Configuration
+
+SystemPropertiesComputerName
+Start-Process C:\SCALA\Player\InfoChannelPlayerConfig5.exe
+Start-Process "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SCALA-CFG-UTIL\AutoLogon Player Account"
+Start-Process "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SCALA-CFG-UTIL\ENABLE Transmission Client Service"
+
+#Open file explorer at scala fonts
+
+explorer "D:\SCALA\PLAYER_CFG_DATA\Application Data\Fonts"
